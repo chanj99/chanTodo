@@ -5,7 +5,7 @@ import java.util.Date;
 
 //할일들의 멤버를 관리하는 class 
 public class TodoItem {
-	//제목, 내역, 입력한 시간, 카테고리, 마감일자 총 5개의 필드를 가지고 있다. 
+	private int Id;
     private String title;
     private String desc;
     private String current_date;
@@ -123,5 +123,14 @@ public class TodoItem {
 	 * */
 	public String toSaveString() {
 		return category + "##" + title + "##" + check + "##" + desc + "##" + levelofCompletion + "##" + quality + "##" + due_date + "##" + current_date + "\n";
+	}
+
+	public void setId(int id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public int getId() {
+		return Id;
 	}
 }

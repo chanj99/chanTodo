@@ -23,9 +23,9 @@ public class TodoUtil {
 	/*
 	 * 객체 하나 생성 하고 list에 넣는다. 
 	 */
-	public static void createItem(TodoList list) {
+public static void createItem(TodoList l) {
 		
-		String title, desc, category, due_date, check, levelofCompletion = null, quality = null;
+		String title, desc, category, check, levelofCompletion = null, due_date, quality = null;
 		Scanner sc = new Scanner(System.in);
 		
 		//category 입력 받기
@@ -37,34 +37,32 @@ public class TodoUtil {
 		//제목 중복 검사하고, 중복되면 추가 안 함.
 		System.out.println("제목 > "); 
 		title = sc.next();
-		if (list.isDuplicate(title)) {
+		if (l.isDuplicate(title)) {
 			System.out.printf("(경고)제목이 중복되어 사용할 수 없습니다!");
 			return;
 		}
+		//check 입력 받기
+		sc.nextLine();
+		System.out.println("완료 여부(yet: 미완료 / done: 완료) > ");
+		check = sc.nextLine().trim(); //좌우여백 제거.
+		
+		if(check == "yet") {
+			sc.nextLine();
+			System.out.println("완성 정도(zero/half/done) > ");
+			levelofCompletion = sc.nextLine().trim(); //좌우여백 제거.
+		}
+		if(check == "done") {
+			levelofCompletion = "done";
+			sc.nextLine();
+			System.out.println("퀄리티 > ");
+			quality = sc.nextLine().trim(); //좌우여백 제거.
+		}
+		
 		//desc입력받기 
 		//엔터를 한번 제거 해준다. 그래야 공백을 제거하고 내용을 정확하게 입력 가능. 
 		sc.nextLine();
 		System.out.println("내용 > ");
 		desc = sc.nextLine().trim(); //좌우여백 제거. 
-		
-		//체크 여부 
-		sc.nextLine();
-		System.out.println("완성여부 (done: 완성, yet: 미완성) > ");
-		check = sc.nextLine().trim(); //좌우여백 제거. 
-		
-		if(check.equals("done")) {
-			levelofCompletion = "done";
-			sc.nextLine();
-			System.out.println("퀄리티 (high/middle/low) > ");
-			quality = sc.nextLine().trim(); //좌우여백 제거. 
-		}
-		
-		else if(check.equals("yet")) {
-			sc.nextLine();
-			System.out.println("진행도(zero, half, done) > ");
-			levelofCompletion = sc.nextLine().trim(); //좌우여백 제거. 
-		}
-		
 		
 		//due date입력받기 
 		//엔터를 한번 제거 해준다. 그래야 공백을 제거하고 내용을 정확하게 입력 가능. 
@@ -72,46 +70,30 @@ public class TodoUtil {
 		System.out.println("마감일자 > (형식: YYYY/MM/DD)");
 		due_date = sc.nextLine().trim(); //좌우여백 제거. 
 		
-		TodoItem t = new TodoItem(category, title, check, desc, levelofCompletion, quality, due_date);
-		list.addItem(t);
-		System.out.println("성공적으로 내용이 추가되었습니다! :) ");
+		TodoItem t = new TodoItem(title, check, desc, category, levelofCompletion, due_date, quality);
+		if(l.addItem(t) > 0)
+			System.out.println("추가되었습니다.");
 	}
+	
 
 	public static void deleteItem(TodoList l) {
-		int editnum = 0;
 		Scanner sc = new Scanner(System.in);
 		
-		System.out.println("[항목 삭제]\n" + "삭제할 항목의 번호를 입력하세요 > ");
-		editnum = sc.nextInt();
-		if(editnum == 0 || editnum > l.numberofItem()) {
-			System.out.println("없는 번호 입니다.");
-			return;
-		}
-		/*
-		 * 제목 일치하면 삭제!제목이 중복되는 것이 없어서 쉽게 삭제 가능. 
-		 * */
-		String reallydel;
-		for (TodoItem item : l.getList()) {
-			if (l.indexOf(item) == (editnum-1)) {
-				System.out.println(item.toString());
-				System.out.println("정말로 삭제하시겠습니까? [y/n]");
-				reallydel = sc.next();
-				if(reallydel.equals("y")) {
-					l.deleteItem(item);
-					System.out.println("성공적으로 내용이 삭제되었습니다! :) ");
-					break;
-				}
-			}
-		}
+		System.out.print("[항목 삭제]\n"
+				+ "삭제할 항목의 번호를 입력하시오 > ");
+		int index = sc.nextInt();
+		if(l.deleteItem(index) > 0)
+			System.out.println("삭제되었습니다. ");
 	}
 
 	public static void updateItem(TodoList l) {
 		int editnum = 0;
 		
+		
 		Scanner sc = new Scanner(System.in);
 		
 		System.out.println("[항목 수정]" + "수정할 항목의 번호를 입력하세요 > ");
-		editnum = sc.nextInt();
+		int index = sc.nextInt();
 		if(editnum == 0 || editnum > l.numberofItem()) {
 			System.out.println("없는 번호 입니다.");
 			return;
@@ -155,27 +137,29 @@ public class TodoUtil {
 					System.out.println("진행도(zero, half) > ");
 					new_levelofCompletion = sc.nextLine().trim(); //좌우여백 제거. 
 				}
-				
 				sc.nextLine();
 				System.out.print("새 마감일자를 입력하세요 > ");
 				String new_due_date = sc.nextLine().trim();
 	
-				
-				l.deleteItem(item);
-				
-				TodoItem t = new TodoItem(new_category, new_title, new_description, new_due_date, new_check, new_levelofCompletion, new_quality);
-				l.addItem(t);
-				System.out.println("수정되었습니다. ");
-				break;
+				TodoItem t = new TodoItem(new_title, new_check, new_description, new_category, new_levelofCompletion, new_due_date, new_quality);
+				t.setId(index);
+				if(l.updateItem(t) > 0)
+					System.out.println("성공적으로 수정되었습니다. ");
 			}	
 			
 		}
 	}
 
 	public static void listAll(TodoList l) {
-		System.out.println("[전체 목록, 총 "+  l.numberofItem() + " 개]");
+		System.out.printf("[전체 목록, 총 %d개]\n", l.getCount());
 		for (TodoItem item : l.getList()) {
-			System.out.print((l.indexOf(item) + 1) + ". " );
+			System.out.println(item.toString());
+		}
+	}
+	
+	public static void listAll(TodoList l, String orderby, int ordering) {
+		System.out.printf("[전체 목록, 총 %d개]\n", l.getCount());
+		for (TodoItem item : l.getOrderedList(orderby, ordering)) {
 			System.out.println(item.toString());
 		}
 	}
@@ -233,30 +217,13 @@ public class TodoUtil {
 		
 	}
 	
-	public static void findInList(TodoList l) {
-		// TODO Auto-generated method stub
-		Scanner sc = new Scanner(System.in);
-		System.out.println("검색할 단어를 입력하세요. > ");
-		String findword = sc.nextLine();
-		
-		//제목에서 키워드 검색 
-		for (TodoItem item2 : l.getList()) {
-			int num = item2.getTitle().indexOf(findword);
-			if(num >= 0) {
-				System.out.print((l.indexOf(item2) + 1) + ". " );
-				System.out.println(item2.toString());
-				continue;
-			}
+	public static void findList(TodoList l, String keyword) {
+		int count = 0;
+		for(TodoItem item : l.getList(keyword)) {
+			System.out.println(item.toString());
+			count++;
 		}
-		//내용에서 키워드 검색 
-		for (TodoItem item3 : l.getList()) {
-			int num = item3.getDesc().indexOf(findword);
-			if(num >= 0) {
-				System.out.print((l.indexOf(item3) + 1) + ". " );
-				System.out.println(item3.toString());
-				continue;
-			}
-		}
+		System.out.printf("총 %d개의 항목을 찾았습니다.\n", count);
 	}
 
 	public static void findCate(TodoList l) {
@@ -290,6 +257,23 @@ public class TodoUtil {
 		System.out.print(i + " /");
 		}
 		
+	}
+	public static void listCateAll(TodoList l) {
+		int count = 0;
+		for(String item : l.getCategories()) {
+			System.out.print(item + " ");
+			count++;
+		}
+		System.out.printf("\n 총 %d개의 카테고리가 등록되어 있습니다. \n", count);
+	}
+	
+	public static void findCateList(TodoList l, String cate) {
+		int count = 0;
+		for(TodoItem item : l.getListCategory(cate)) {
+			System.out.println(item.toString());
+			count++;
+		}
+		System.out.printf("\n 총 %d개의 항목을 찾았습니다. \n", count);
 	}
 	
 }
