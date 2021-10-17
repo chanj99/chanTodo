@@ -25,7 +25,7 @@ public class TodoUtil {
 	 */
 	public static void createItem(TodoList list) {
 		
-		String title, desc, category, due_date;
+		String title, desc, category, due_date, check, levelofCompletion = null, quality = null;
 		Scanner sc = new Scanner(System.in);
 		
 		//category 입력 받기
@@ -47,13 +47,32 @@ public class TodoUtil {
 		System.out.println("내용 > ");
 		desc = sc.nextLine().trim(); //좌우여백 제거. 
 		
+		//체크 여부 
+		sc.nextLine();
+		System.out.println("완성여부 (done: 완성, yet: 미완성) > ");
+		check = sc.nextLine().trim(); //좌우여백 제거. 
+		
+		if(check.equals("done")) {
+			levelofCompletion = "done";
+			sc.nextLine();
+			System.out.println("퀄리티 (high/middle/low) > ");
+			quality = sc.nextLine().trim(); //좌우여백 제거. 
+		}
+		
+		else if(check.equals("yet")) {
+			sc.nextLine();
+			System.out.println("진행도(zero, half, done) > ");
+			levelofCompletion = sc.nextLine().trim(); //좌우여백 제거. 
+		}
+		
+		
 		//due date입력받기 
 		//엔터를 한번 제거 해준다. 그래야 공백을 제거하고 내용을 정확하게 입력 가능. 
 		sc.nextLine();
 		System.out.println("마감일자 > (형식: YYYY/MM/DD)");
 		due_date = sc.nextLine().trim(); //좌우여백 제거. 
 		
-		TodoItem t = new TodoItem(category, title, desc, due_date);
+		TodoItem t = new TodoItem(category, title, check, desc, levelofCompletion, quality, due_date);
 		list.addItem(t);
 		System.out.println("성공적으로 내용이 추가되었습니다! :) ");
 	}
@@ -88,6 +107,7 @@ public class TodoUtil {
 
 	public static void updateItem(TodoList l) {
 		int editnum = 0;
+		
 		Scanner sc = new Scanner(System.in);
 		
 		System.out.println("[항목 수정]" + "수정할 항목의 번호를 입력하세요 > ");
@@ -96,7 +116,7 @@ public class TodoUtil {
 			System.out.println("없는 번호 입니다.");
 			return;
 		}
-		
+		String new_levelofCompletion = null, new_quality=null;
 		//수정할 데이터 보여주기.
 		for (TodoItem item : l.getList()) {
 			if(l.indexOf(item) == (editnum-1)) {
@@ -117,13 +137,33 @@ public class TodoUtil {
 				System.out.print("새 내용을 입력하세요 > ");
 				String new_description = sc.nextLine().trim();
 				
+				//체크 여부 
+				sc.nextLine();
+				System.out.println("완성여부 (done: 완성, yet: 미완성) > ");
+				String new_check = sc.nextLine().trim(); //좌우여백 제거. 
+				
+				
+				if(new_check.equals("done")) {
+					sc.nextLine();
+					new_levelofCompletion = "done";
+					System.out.println("퀄리티 (high/middle/low) > ");
+					new_quality = sc.nextLine().trim(); //좌우여백 제거. 
+				}
+				
+				else if(new_check.equals("yet")) {
+					sc.nextLine();
+					System.out.println("진행도(zero, half) > ");
+					new_levelofCompletion = sc.nextLine().trim(); //좌우여백 제거. 
+				}
+				
 				sc.nextLine();
 				System.out.print("새 마감일자를 입력하세요 > ");
 				String new_due_date = sc.nextLine().trim();
 	
 				
 				l.deleteItem(item);
-				TodoItem t = new TodoItem(new_category, new_title, new_description, new_due_date);
+				
+				TodoItem t = new TodoItem(new_category, new_title, new_description, new_due_date, new_check, new_levelofCompletion, new_quality);
 				l.addItem(t);
 				System.out.println("수정되었습니다. ");
 				break;
@@ -168,11 +208,13 @@ public class TodoUtil {
 				StringTokenizer st = new StringTokenizer(oneline, "##");
 				String category = st.nextToken();
 				String title = st.nextToken();
+				String check = st.nextToken();
 			    String desc = st.nextToken();
+			    String levelofCompletion = st.nextToken();
+			    String quality = st.nextToken();
 			    String due_date = st.nextToken();
-			    String current_date = st.nextToken();
-			    
-			    TodoItem item = new TodoItem(category, title, desc, due_date, current_date);
+			   
+			    TodoItem item = new TodoItem(category, title, check, desc, levelofCompletion, quality, due_date);
 			    l.addItem(item);
 			    count ++;
 			}

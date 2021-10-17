@@ -11,24 +11,56 @@ public class TodoItem {
     private String current_date;
     private String category;
     private String due_date;
+    private String check;
+    private String quality;
+    private String levelofCompletion;
 
     //생성자, title, decs 받는다. 다다
-    public TodoItem(String category, String title, String desc, String due_date){
+    public TodoItem(String category, String title, String check, String desc, String quality, String levelofCompletion, String due_date){
     	this.category = category;
         this.title=title;
+        this.check=check;
         this.desc=desc;
+        this.quality=quality;
+        this.levelofCompletion=levelofCompletion;
         this.due_date = due_date;
         SimpleDateFormat f = new SimpleDateFormat("yyy/MM/dd kk:mm:ss");
         this.current_date= f.format(new Date()); //현재시간을 그대로 date 로 넣는다. 자동으로. 
     }
     
-    public TodoItem(String category2, String title2, String desc2,String due_date2, String current_date2) {
-    	this.category = category;
-		// TODO Auto-generated constructor stub
+    public TodoItem(String category2, String title2, String check2, String desc2, String quality2, String levelofCompletion2, String due_date2, String current_date2) {
+    	this.category = category2;
     	this.title=title2;
+    	this.check=check2;
         this.desc=desc2;
-        this.due_date = due_date;
+        this.quality=quality2;
+        this.levelofCompletion=levelofCompletion2;
+        this.due_date = due_date2;
         this.current_date = current_date2;
+	}
+
+	public String getCheck() {
+		return check;
+	}
+
+	public void setCheck(String check) {
+		this.check = check;
+	}
+
+	public String getQuality() {
+		return quality;
+	}
+
+	public void setQuality(String quality) {
+		this.quality = quality;
+	}
+
+	public String getLevelofCompletion() {
+		return levelofCompletion;
+	}
+
+	public void setLevelofCompletion(String levelofCompletion) {
+		this.levelofCompletion = levelofCompletion;
 	}
 
 	public String getTitle() {
@@ -73,17 +105,23 @@ public class TodoItem {
 
 	@Override
 	public String toString() {
-		return  "[" + category + "]" + title + " - " + desc + " - " + due_date + " - " +current_date;
+		String checkstring = null;
+		if(check.equals("done")) {
+			checkstring = "[V]";
+		}
+		if(check.equals("yet")) {
+			checkstring = " ";
+		}
+		return  "[" +category+ "]" + title + checkstring + " - " + desc + " - <완성도: " + levelofCompletion + "> - <Quality: " + quality + "> - " + due_date + " - " +current_date;
 	}
 	
 	public String cateString() {
 		return category;
 	}
-	
 	/*
 	 * file에 저장하기 위한 string 함수 추가 
 	 * */
 	public String toSaveString() {
-		return category + "##" + title + "##" + desc + "##" + due_date + "##" + current_date + "\n";
+		return category + "##" + title + "##" + check + "##" + desc + "##" + levelofCompletion + "##" + quality + "##" + due_date + "##" + current_date + "\n";
 	}
 }
